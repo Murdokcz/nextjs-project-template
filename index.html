@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro - Motoristas de App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container flex h-screen font-sans bg-gray-100 text-gray-900">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar bg-blue-900 w-64 p-6 flex flex-col">
+            <div class="logo mb-8">
+                <h1 class="text-white text-3xl font-bold">DriverFinance</h1>
+            </div>
+            <div class="nav-links flex flex-col gap-4 mt-8">
+                <div class="w-full">
+                    <button class="nav-button w-full text-left px-6 py-3 rounded-lg text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer active:bg-blue-800" data-page="dashboard">
+                        <span class="block">Dashboard</span>
+                    </button>
+                </div>
+                <div class="w-full">
+                    <button class="nav-button w-full text-left px-6 py-3 rounded-lg text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer active:bg-blue-800" data-page="transactions">
+                        <span class="block">Transações</span>
+                    </button>
+                </div>
+                <div class="w-full">
+                    <button class="nav-button w-full text-left px-6 py-3 rounded-lg text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer active:bg-blue-800" data-page="goals">
+                        <span class="block">Metas</span>
+                    </button>
+                </div>
+                <div class="w-full">
+                    <button class="nav-button w-full text-left px-6 py-3 rounded-lg text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer active:bg-blue-800" data-page="reports">
+                        <span class="block">Relatórios</span>
+                    </button>
+                </div>
+                <div class="w-full">
+                    <button class="nav-button w-full text-left px-6 py-3 rounded-lg text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer active:bg-blue-800" data-page="settings">
+                        <span class="block">Configurações</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content flex-1 p-6 overflow-auto">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="page block">
+                <h2 class="text-2xl font-semibold mb-6">Dashboard</h2>
+                <div class="cards-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="card bg-white rounded shadow p-6">
+                        <h3 class="text-gray-600 text-sm mb-2">Saldo Total</h3>
+                        <p class="balance text-2xl font-semibold">R$ 0,00</p>
+                    </div>
+                    <div class="card bg-white rounded shadow p-6">
+                        <h3 class="text-gray-600 text-sm mb-2">Ganhos do Mês</h3>
+                        <p class="income text-2xl font-semibold">R$ 0,00</p>
+                    </div>
+                    <div class="card bg-white rounded shadow p-6">
+                        <h3 class="text-gray-600 text-sm mb-2">Despesas do Mês</h3>
+                        <p class="expenses text-2xl font-semibold">R$ 0,00</p>
+                    </div>
+                    <div class="card bg-white rounded shadow p-6">
+                        <h3 class="text-gray-600 text-sm mb-2">Meta Mensal</h3>
+                        <div class="goal-progress flex items-center space-x-4">
+                            <div class="progress-bar flex-1 bg-gray-200 rounded h-4 overflow-hidden">
+                                <div class="progress bg-blue-600 h-4" style="width: 0%"></div>
+                            </div>
+                            <p class="text-gray-700 font-semibold">0%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-container bg-white rounded shadow p-6">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Transactions Section -->
+            <section id="transactions" class="page hidden md:hidden">
+                <h2 class="text-2xl font-semibold mb-6">Registrar Transação</h2>
+                <form id="transactionForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Tipo</label>
+                        <select id="transactionType" required class="border border-gray-300 rounded p-2">
+                            <option value="income">Ganho</option>
+                            <option value="expense">Despesa</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Data</label>
+                        <input type="date" id="transactionDate" required class="border border-gray-300 rounded p-2">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Valor (R$)</label>
+                        <input type="number" id="transactionAmount" step="0.01" required class="border border-gray-300 rounded p-2">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Categoria</label>
+                        <select id="transactionCategory" required class="border border-gray-300 rounded p-2">
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group flex flex-col" id="appSelectGroup">
+                        <label class="mb-1 font-medium text-gray-700">Aplicativo</label>
+                        <select id="transactionApp" class="border border-gray-300 rounded p-2">
+                            <option value="uber">Uber</option>
+                            <option value="99">99</option>
+                            <!-- More options added via JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Observações</label>
+                        <textarea id="transactionNotes" class="border border-gray-300 rounded p-2"></textarea>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700">Registrar</button>
+                </form>
+
+                <div class="transactions-list">
+                    <h3 class="text-xl font-semibold mb-4">Últimas Transações</h3>
+                    <table id="transactionsTable" class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-200 text-left">
+                                <th class="p-2 border border-gray-300">Data</th>
+                                <th class="p-2 border border-gray-300">Tipo</th>
+                                <th class="p-2 border border-gray-300">Valor</th>
+                                <th class="p-2 border border-gray-300">Categoria</th>
+                                <th class="p-2 border border-gray-300">App</th>
+                                <th class="p-2 border border-gray-300">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Goals Section -->
+            <section id="goals" class="page hidden md:hidden">
+                <h2 class="text-2xl font-semibold mb-6">Metas Financeiras</h2>
+                <form id="goalForm" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Descrição</label>
+                        <input type="text" id="goalDescription" required class="border border-gray-300 rounded p-2">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Valor Alvo (R$)</label>
+                        <input type="number" id="goalAmount" step="0.01" required class="border border-gray-300 rounded p-2">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label class="mb-1 font-medium text-gray-700">Data Limite</label>
+                        <input type="date" id="goalDate" required class="border border-gray-300 rounded p-2">
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700">Adicionar Meta</button>
+                </form>
+
+                <div class="goals-list">
+                    <h3 class="text-xl font-semibold mb-4">Metas Atuais</h3>
+                    <div id="goalsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="page hidden md:hidden">
+                <h2 class="text-2xl font-semibold mb-6">Relatórios</h2>
+                <div class="filters flex gap-4 mb-6">
+                    <select id="reportPeriod" class="border border-gray-300 rounded p-2">
+                        <option value="day">Hoje</option>
+                        <option value="week">Esta Semana</option>
+                        <option value="month">Este Mês</option>
+                        <option value="year">Este Ano</option>
+                    </select>
+                    <select id="reportApp" class="border border-gray-300 rounded p-2">
+                        <option value="all">Todos os Apps</option>
+                        <!-- More options added via JavaScript -->
+                    </select>
+                </div>
+                <div class="reports-grid grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="report-card bg-white rounded shadow p-6">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="report-card bg-white rounded shadow p-6">
+                        <canvas id="appChart"></canvas>
+                    </div>
+                </div>
+                <div class="tax-summary bg-white rounded shadow p-6">
+                    <h3 class="text-xl font-semibold mb-4">Resumo para Imposto de Renda</h3>
+                    <div class="tax-grid grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="tax-item flex justify-between">
+                            <span>Ganhos Totais:</span>
+                            <span id="taxTotalIncome">R$ 0,00</span>
+                        </div>
+                        <div class="tax-item flex justify-between">
+                            <span>Despesas Dedutíveis:</span>
+                            <span id="taxDeductibleExpenses">R$ 0,00</span>
+                        </div>
+                        <div class="tax-item flex justify-between">
+                            <span>Reserva Sugerida (27.5%):</span>
+                            <span id="taxReserve">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="page hidden md:hidden">
+                <h2>Configurações</h2>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3>Categorias de Ganhos</h3>
+                    <div id="incomeCategories">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <button class="btn-secondary" id="addIncomeCategory">Adicionar Categoria</button>
+                </div>
+                <div class="settings-card">
+                    <h3>Categorias de Despesas</h3>
+                    <div id="expenseCategories">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <button class="btn-secondary" id="addExpenseCategory">Adicionar Categoria</button>
+                </div>
+                <div class="settings-card">
+                    <h3>Aplicativos</h3>
+                    <div id="appsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <button class="btn-secondary" id="addApp">Adicionar Aplicativo</button>
+                </div>
+                <div class="settings-card">
+                    <h3>Controle de Combustível</h3>
+                    <form id="fuelForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="fuelKm">Quilômetros rodados:</label>
+                            <input type="number" id="fuelKm" required min="0" step="0.1" />
+                        </div>
+                        <div class="form-group">
+                            <label for="fuelEfficiency">Eficiência do veículo (km/l):</label>
+                            <input type="number" id="fuelEfficiency" required min="0" step="0.1" />
+                        </div>
+                        <div class="form-group">
+                            <label for="fuelPrice">Preço do combustível:</label>
+                            <input type="number" id="fuelPrice" required min="0" step="0.01" />
+                        </div>
+                        <div class="form-group" id="priceTypeGroup">
+                            <label>
+                                <input type="radio" name="priceType" value="perLiter" checked /> Por Litro
+                            </label>
+                            <label>
+                                <input type="radio" name="priceType" value="total" /> Total Gasto
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-primary">Calcular</button>
+                    </form>
+                    <div id="fuelResults" class="mt-4"></div>
+                </div>
+            </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
